@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const { hashSync } = require('bcrypt')
 const { nanoid } = require('nanoid')
+const Snowflake = require('../utils/snowflake')
 
 const SentenceType = Object.freeze({
   SYSTEM: 0,
@@ -36,6 +37,12 @@ const SentenceSchema = new mongoose.Schema(
     },
     from: {
       type: String,
+    },
+    nonce: {
+      type: String,
+      default: () => {
+        return Snowflake.gen()
+      },
     },
   },
   SchemaOptions,

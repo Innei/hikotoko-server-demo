@@ -3,6 +3,8 @@ const assert = require('http-assert')
 const constant = require('../constant')
 const { validNotEmptyString, validStringOrUndefined } = require('../utils')
 const { Types } = require('mongoose')
+const FlakeId = require('../utils/snowflake')
+const Snowflake = require('../utils/snowflake')
 class SentenceControllerStatic {
   async getRandom(req, res) {
     const { count: queryCount } = req.query
@@ -31,7 +33,7 @@ class SentenceControllerStatic {
   }
 
   async insert(req, res) {
-    const { author, from, text } = req.body
+    const { author, from, text, nonce = Snowflake.gen() } = req.body
     validNotEmptyString(text, 'text')
     validStringOrUndefined(author, 'author')
     validStringOrUndefined(from, 'from')
@@ -45,6 +47,7 @@ class SentenceControllerStatic {
       from,
       type: SentenceType.USER,
       user_id,
+      nonce,
     })
 
     res.status(201).send(data)
