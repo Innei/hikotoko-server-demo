@@ -25,6 +25,9 @@ class SentenceControllerStatic {
     } else {
       const data = await Sentence.aggregate([
         {
+          $match: {
+            liked_id: null,
+          },
           $sample: { size: ~~queryCount },
         },
       ])
@@ -33,7 +36,8 @@ class SentenceControllerStatic {
   }
 
   async insert(req, res) {
-    const { author, from, text, nonce = Snowflake.gen() } = req.body
+    const { author, from, text } = req.body
+
     validNotEmptyString(text, 'text')
     validStringOrUndefined(author, 'author')
     validStringOrUndefined(from, 'from')
@@ -47,10 +51,49 @@ class SentenceControllerStatic {
       from,
       type: SentenceType.USER,
       user_id,
-      nonce,
+      nonce: Snowflake.gen(),
     })
 
     res.status(201).send(data)
+  }
+
+  async likeSentence(req, res) {
+    const { id } = req.params
+
+    const { user } = req
+    const { _id: user_id } = user
+
+    assert(Types.ObjectId.isValid(id), 422, 'id must be object id. got ' + id)
+
+    const hasDocument = await Sentence.findOne({
+      _id: id,
+      type: SentenceType.SYSTEM,
+    })
+    assert(hasDocument, 422, 'sentence not found.')
+
+    const isLiked = await Sentence.findOne({
+      type: SentenceType.USER,
+      liked_id: id,
+    })
+
+    assert(
+      !isLiked,
+      422,
+      'sentence already liked. document id: ' + (isLiked && isLiked._id),
+    )
+
+    const newModel = {
+      ...hasDocument.toJSON(),
+      type: SentenceType.USER,
+      liked_id: hasDocument._id,
+      user_id,
+      nonce: Snowflake.gen(),
+    }
+    delete newModel._id
+    delete newModel.id
+    delete newModel.updated_at
+    const document = await Sentence.create(newModel)
+    res.send(document)
   }
 
   async patch(req, res) {
@@ -70,13 +113,14 @@ class SentenceControllerStatic {
       type: SentenceType.USER,
       user_id,
     })
-    assert(doc, 422, 'document not found.')
+    assert(doc, 422, 'sentence not found.')
 
     await Sentence.updateOne(
       {
         _id,
         type: SentenceType.USER,
         user_id,
+        nonce: Snowflake.gen(),
       },
       {
         author,
@@ -102,7 +146,7 @@ class SentenceControllerStatic {
       type: SentenceType.USER,
       user_id,
     })
-    assert(doc, 422, 'document not found.')
+    assert(doc, 422, 'sentence not found.')
 
     await Sentence.deleteOne({ _id: id })
     res.status(204).end()
@@ -120,6 +164,9 @@ class SentenceControllerStatic {
 
     res.send({ data: data })
   }
+
+  // sync sentences
+  async syncSentence(req, res) {}
 }
 
 module.exports = new SentenceControllerStatic()

@@ -19,9 +19,11 @@ class UserControllerStatic {
     validNotEmptyString(email, 'email')
 
     const code = nanoid(6)
-    const isExist = await User.find({
-      username,
-    })
+    const isExist =
+      (await User.countDocuments({
+        username,
+      })) > 0
+
     assert(!isExist, 422, 'user is exists.')
     const doc = await User.create({
       username,

@@ -1,11 +1,11 @@
 @base=http://127.0.0.1:3000/v1
-
+@token=bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IklubmVpIiwiY29kZSI6ImVBYXJxaCIsImlkIjoiNWZlZGRmNThkODc0ZjQwZDFkYTQ4MjZmIiwiaWF0IjoxNjA5NDI0NzI4fQ.qp_nnfDJ2OHx-bacE17LICFhLsmS7cpZNp2A_uFiK38
 ### register
 POST  {{base}}/users/register
 Content-Type:  application/json
 
 {
-  "username": "Innei2",
+  "username": "Innei",
   "password": "111",
   "email": "1@qq.com"
 }
@@ -56,4 +56,12 @@ Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Iklub
 ### get all which this user created
 GET {{base}}/sentences/user
 Content-Type:  application/json
-Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IklubmVpIiwiY29kZSI6InBKTHpNdSIsImlkIjoiNWZlYzU5YTMxYzg5MTY5OGE4YjhiNjg3IiwiaWF0IjoxNjA5MzI0OTYzfQ.xOAH70DsD7VQkpZnYpWtxen8h6KnxxbWSH8hKoes7OY
+Authorization: {{token}}
+
+### like a sentence
+GET {{base}}/sentences/like/5fed8c8bace5d7a05c09c434
+Authorization: {{token}}
+
+### dislike a sentence
+DELETE {{base}}/sentences/5fede5015f04b9124234b6fc
+Authorization: {{token}}

@@ -22,7 +22,6 @@ const SentenceSchema = new mongoose.Schema(
   {
     text: {
       type: String,
-      required: true,
     },
     type: {
       type: Number,
@@ -40,13 +39,21 @@ const SentenceSchema = new mongoose.Schema(
     },
     nonce: {
       type: String,
-      default: () => {
-        return Snowflake.gen()
-      },
+    },
+    liked_id: {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: 'Sentence',
     },
   },
   SchemaOptions,
 )
+
+SentenceSchema.virtual('liked', {
+  ref: 'Sentence',
+  localField: 'liked_id',
+  foreignField: '_id',
+  justOne: true,
+})
 
 const UserSchema = new mongoose.Schema({
   username: {
