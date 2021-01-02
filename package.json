@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "nodemon index.js",
+    "prod": "pm2 restart ecosystem.config.js"
   },
   "dependencies": {
     "@types/bcrypt": "3.0.0",
