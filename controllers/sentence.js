@@ -28,6 +28,8 @@ class SentenceControllerStatic {
           $match: {
             liked_id: null,
           },
+        },
+        {
           $sample: { size: ~~queryCount },
         },
       ])
