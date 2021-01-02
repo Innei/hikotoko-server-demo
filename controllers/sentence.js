@@ -166,7 +166,74 @@ class SentenceControllerStatic {
   }
 
   // sync sentences
-  async syncSentence(req, res) {}
+  async syncSentence(req, res) {
+    const { body } = req
+    const {
+      user: { _id: user_id },
+    } = req
+    assert(Array.isArray(body), 422, `body must be a array, got ${body}`)
+    const isValid = body.every(
+      (i) =>
+        typeof i.nonce === 'string' &&
+        typeof i.text === 'string' &&
+        [0, 1].includes(i.type),
+    )
+    assert(
+      isValid,
+      422,
+      `list type must be SentenceType, got ${JSON.stringify(body)}`,
+    )
+
+    const now = new Date()
+    // console.log(body)
+    for await (const item of body) {
+      const isBuiltIn = Types.ObjectId.isValid(item.nonce)
+      if (isBuiltIn) {
+        const sentence = await Sentence.findOne({
+          _id: item.nonce,
+          type: SentenceType.SYSTEM,
+        })
+
+        if (sentence) {
+          const model = sentence.toJSON()
+          delete model._id
+          delete model.created_at
+          delete model.updated_at
+
+          model.user_id = user_id
+          model.liked_id = sentence._id
+
+          await Sentence.create({
+            ...item,
+            ...model,
+            type: SentenceType.USER,
+          })
+        } else {
+          await Sentence.create({ ...item, user_id })
+        }
+      } else {
+        await Sentence.create({ ...item, user_id })
+      }
+    }
+
+    // then clean before data
+
+    await Sentence.deleteMany({
+      type: SentenceType.USER,
+      created_at: {
+        $lte: now,
+      },
+    })
+
+    // get all data
+
+    const list = await Sentence.find({
+      type: SentenceType.USER,
+      user_id,
+    })
+
+    res.send({ data: list })
+  }
 }
 
 module.exports = new SentenceControllerStatic()

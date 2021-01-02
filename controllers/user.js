@@ -1,80 +1,38 @@
 const { User } = require('../models')
+const { Sentence, SentenceType } = require('../models')
 const assert = require('http-assert')
 const { compareSync } = require('bcrypt')
 const { sign, verify } = require('jsonwebtoken')
 const { nanoid } = require('nanoid')
 const constant = require('../constant')
-const { validNotEmptyString } = require('../utils')
+const { validNotEmptyString, getGravatar } = require('../utils')
 
 class UserControllerStatic {
-  constructor() {
-    this.signToken = this.signToken.bind(this)
-    this.register = this.register.bind(this)
-    this.login = this.login.bind(this)
-  }
-  async register(req, res) {
-    const { username, password, email } = req.body
-    validNotEmptyString(username, 'username')
-    validNotEmptyString(password, 'password')
-    validNotEmptyString(email, 'email')
+  async delete(req, res) {
+    const {
+      user: { _id: user_id },
+    } = req
 
-    const code = nanoid(6)
-    const isExist =
-      (await User.countDocuments({
-        username,
-      })) > 0
+    await Sentence.deleteMany({
+      type: SentenceType.USER,
+      user_id,
+    })
 
-    assert(!isExist, 422, 'user is exists.')
-    const doc = await User.create({
-      username,
-      password,
-      email,
-      randomCode: code,
-    })
-    const data = doc.toJSON()
-    delete data.randomCode
-    delete data.password
-    const token = this.signToken({ ...doc.toJSON(), randomCode: code })
-    res.send({
-      ...data,
-      token,
-    })
+    await User.deleteOne({ _id: user_id })
+    res.status(204).end()
   }
 
-  async login(req, res) {
-    const { username, password } = req.body
-    validNotEmptyString(username, 'username')
-    validNotEmptyString(password, 'password')
-    const user = await User.findOne({
-      username,
-    })
-      .select('+randomCode +password')
-      .lean()
+  async patch(req, res) {
+    // TODO re-check password
 
-    assert(!!user, 422, 'user not exists')
+    assert(!req.body.password, 400, 'not support change password current.')
 
-    const isValid = compareSync(password, user.password)
+    const {
+      user: { _id: user_id },
+    } = req
 
-    assert(isValid, 422, 'password not correct.')
-
-    const token = this.signToken(user)
-    delete user.randomCode
-    delete user.password
-
-    res.send({
-      ...user,
-      token,
-    })
-  }
-
-  signToken(doc) {
-    return (
-      'bearer ' +
-      sign(
-        { username: doc.username, code: doc.randomCode, id: doc._id },
-        constant.jwtKey,
-      )
-    )
+    await User.updateOne({ _id: user_id }, req.body, { omitUndefined: true })
+    res.status(204).end()
   }
 }
 

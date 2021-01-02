@@ -1,23 +1,36 @@
 @base=http://127.0.0.1:3000/v1
 @token=bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IklubmVpIiwiY29kZSI6ImVBYXJxaCIsImlkIjoiNWZlZGRmNThkODc0ZjQwZDFkYTQ4MjZmIiwiaWF0IjoxNjA5NDI0NzI4fQ.qp_nnfDJ2OHx-bacE17LICFhLsmS7cpZNp2A_uFiK38
 ### register
-POST  {{base}}/users/register
+POST  {{base}}/auth/register
 Content-Type:  application/json
 
 {
   "username": "Innei",
   "password": "111",
-  "email": "1@qq.com"
+  "email": "tukon479@gmail.com"
 }
 
 ### login
-POST {{base}}/users/login
+POST {{base}}/auth/login
 Content-Type: application/json
 
 {
   "username": "Innei",
-  "password": "111",
-  "email": "1@qq.com"
+  "password": "111"
+  
+}
+
+### delete user
+DELETE {{base}}/users/
+Authorization: {{token}}
+
+### patch user
+PATCH {{base}}/users
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "email": "tukon479@gmail.com"
 }
 
 ### get random one

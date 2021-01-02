@@ -14,7 +14,18 @@ const validStringOrUndefined = (val, name) => {
     name + ' can be undefined or string, got ' + val,
   )
 }
+
+const md5 = (text) =>
+  require('crypto').createHash('md5').update(text).digest('hex')
+const getGravatar = (email) => {
+  if (!email) {
+    return ''
+  }
+  return `https://sdn.geekzu.org/avatar/${md5(email)}`
+}
+
 module.exports = {
   validNotEmptyString,
   validStringOrUndefined,
+  getGravatar,
 }
