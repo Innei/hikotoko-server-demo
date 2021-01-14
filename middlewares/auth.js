@@ -1,3 +1,11 @@
+/*
+ * @Author: Innei
+ * @Date: 2020-12-30 17:10:21
+ * @LastEditTime: 2021-01-14 16:00:58
+ * @LastEditors: Innei
+ * @FilePath: /demo-server/middlewares/auth.js
+ * @Mark: Coding with Love
+ */
 const constant = require('../constant')
 const { verify } = require('jsonwebtoken')
 const { User } = require('../models')
@@ -24,11 +32,11 @@ module.exports = async (req, res, next) => {
       }
     } catch (e) {
       console.log(e)
-      return res.status(422).send({ message: 'token is valid' })
+      return res.status(422).send({ message: 'token is invalid' })
     }
   }
 
   return res
     .status(422)
-    .send({ message: 'authorization failed, check token please,' })
+    .send({ message: 'authorization failed, check token please.' })
 }
