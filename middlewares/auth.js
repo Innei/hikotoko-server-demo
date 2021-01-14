@@ -1,7 +1,7 @@
 /*
  * @Author: Innei
  * @Date: 2020-12-30 17:10:21
- * @LastEditTime: 2021-01-14 16:00:58
+ * @LastEditTime: 2021-01-14 16:04:40
  * @LastEditors: Innei
  * @FilePath: /demo-server/middlewares/auth.js
  * @Mark: Coding with Love
@@ -29,6 +29,10 @@ module.exports = async (req, res, next) => {
         req.user = user
 
         return next()
+      } else {
+        return res.status(422).send({
+          message: 'token is expired',
+        })
       }
     } catch (e) {
       console.log(e)
