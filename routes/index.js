@@ -1,3 +1,11 @@
+/*
+ * @Author: Innei
+ * @Date: 2021-01-04 16:21:40
+ * @LastEditTime: 2021-01-15 14:41:33
+ * @LastEditors: Innei
+ * @FilePath: /demo-server/routes/index.js
+ * @Mark: Coding with Love
+ */
 const { Router } = require('express')
 const Express = require('express')
 const authMiddleware = require('../middlewares/auth')
@@ -36,4 +44,5 @@ module.exports = (app) => {
   root.use('/users', user)
 
   app.use('/v1', root)
+  app.get('/', SentenceController.getRandom)
 }

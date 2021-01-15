@@ -1,11 +1,15 @@
+/*
+ * @Author: Innei
+ * @Date: 2021-01-04 16:21:40
+ * @LastEditTime: 2021-01-15 14:40:47
+ * @LastEditors: Innei
+ * @FilePath: /demo-server/controllers/user.js
+ * @Mark: Coding with Love
+ */
+// @ts-check
 const { User } = require('../models')
 const { Sentence, SentenceType } = require('../models')
 const assert = require('http-assert')
-const { compareSync } = require('bcrypt')
-const { sign, verify } = require('jsonwebtoken')
-const { nanoid } = require('nanoid')
-const constant = require('../constant')
-const { validNotEmptyString, getGravatar } = require('../utils')
 
 class UserControllerStatic {
   async delete(req, res) {
