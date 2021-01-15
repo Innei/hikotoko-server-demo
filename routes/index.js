@@ -1,7 +1,7 @@
 /*
  * @Author: Innei
  * @Date: 2021-01-04 16:21:40
- * @LastEditTime: 2021-01-15 14:41:33
+ * @LastEditTime: 2021-01-15 14:44:53
  * @LastEditors: Innei
  * @FilePath: /demo-server/routes/index.js
  * @Mark: Coding with Love
@@ -41,8 +41,9 @@ user.patch('/', UserController.patch)
 module.exports = (app) => {
   root.use('/auth', auth)
   root.use('/sentences', sentence)
+  root.use('/hikotoko', sentence)
   root.use('/users', user)
 
+  root.get('/', SentenceController.getRandom)
   app.use('/v1', root)
-  app.get('/', SentenceController.getRandom)
 }
